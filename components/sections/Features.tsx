@@ -27,9 +27,9 @@ const Features = () => {
 
                     <div>
                         <Badge className="mb-6 bg-[#232834] text-white h-6 rounded-full">Our best features for you 💎</Badge>
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient2 mb-6">THE SOLUTION TO YOUR PARKING PROBLEMS</h1>                        <p className="text-md text-gray-400 mb-8">
-                            We are aware that many people have difficulty finding a parking space. We made a feature that can
-                            certainly solve your parking problems so far
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient2 mb-6">THE SOLUTION TO YOUR PARKING PROBLEMS</h1>                        
+                        <p className="text-md text-gray-400 mb-8">
+                            At PARK It Up, we understand the daily struggle of finding a parking spot. That&#39;s why we&#39;ve developed a smart solution designed to eliminate the hassle and make parking effortless.
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-fit mx-auto lg:mx-0">
                             <Card className="feature-card bg-[#232834] hover:scale-105 hover:bg-[#4d84a4] transition-all">
@@ -60,8 +60,8 @@ const Features = () => {
                                         <div className="w-12 h-12 bg-gradient-to-b from-[#2b333b] from-10% to-[#384047] to-80% rounded-lg flex items-center justify-center">
                                             <FaCarOn className="w-6 h-6 text-gray-400" />
                                         </div>                        <div>
-                            <h3 className="text-md text-gray-100">Real Time Availability</h3>
-                        </div>
+                                            <h3 className="text-md text-gray-100">Real Time Availability</h3>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>

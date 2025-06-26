@@ -31,7 +31,7 @@ const Testimonial = () => {
                         WHAT OUR USER SAY ABOUT US?
                     </h2>
                     <p className="text-xl text-gray-300 mb-8 max-w-lg mx-auto md:mx-0">
-                        You will get many benefits from our features. Finding a parking space becomes easier
+                        With PARK It Up&#39;s powerful features, you&#39;ll enjoy a seamless parking experience—making it quicker and easier than ever to find the perfect spot.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 items-center md:items-start justify-center md:justify-start">
                         <Button className="bg-gray-600 hover:bg-gray-500 text-white px-8 py-3 rounded-full border-2 border-gray-500 hover:border-gray-400 transition-all">

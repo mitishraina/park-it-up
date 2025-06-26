@@ -4,7 +4,7 @@ import { IoCall, IoLocation } from "react-icons/io5";
 import { MdOutlineEmail } from "react-icons/md";
 
 export default function ContactPage() {  return (
-    <div className="bg-[#141a24] text-white px-6 py-8 sm:p-10 lg:px-20 xl:px-32 w-full">
+    <div className="bg-[#0a121a] text-white px-6 py-8 sm:p-10 lg:px-20 xl:px-32 w-full">
         <div className="text-center mb-10">
            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold">CONTACT US</h1>
              <h3 className="text-gray-400 pt-3 max-w-xl mx-auto text-lg sm:text-xl md:text-2xl px-4">

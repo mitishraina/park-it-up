@@ -1,5 +1,5 @@
 import React from "react";
-import { FaInstagram, FaFacebookF, FaGooglePlay } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
 import { FaLinkedinIn } from "react-icons/fa6";
 // import Logo from "@/components/assets/Parkitup_logo.png";
 // import Image from "next/image";
@@ -19,7 +19,7 @@ const Footer = () => {
             <div className="flex flex-col items-start md:w-full">
               <div className="font-semibold mb-4 md:mb-6">ADDRESS</div>
               <p className="text-gray-400 text-md">
-                811C, AB4, Delhi Technological University, Rohini, Delhi, India
+                811C, AB4,<br /> Delhi Technological University,<br /> Rohini, Delhi, India
               </p>
             </div>
             <div className="flex flex-row w-full ">
@@ -49,7 +49,7 @@ const Footer = () => {
                   <a href="mailto:officialparkitup@gmail.com">officialparkitup@gmail.com</a>
                 </li>
               </ul>
-              <form className="relative w-full mt-4">
+              {/* <form className="relative w-full mt-4">
                 <input
                   type="email"
                   placeholder="Enter email..."
@@ -61,11 +61,11 @@ const Footer = () => {
                 >
                   Submit
                 </button>
-              </form>
+              </form> */}
             </div>
           </div>
           <div className="w-full border-t border-gray-700 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 mt-4">            <span className="text-gray-400 text-xs text-center w-full md:w-auto">
-              © 2025 PARK It Up. All rights reserved.
+              © 2023 PARK It Up. All rights reserved.
             </span>
             <div className="flex gap-4 mt-2 md:mt-0 justify-center w-full md:w-auto">
               <a href="#" className="text-gray-400 hover:text-white">
@@ -73,12 +73,6 @@ const Footer = () => {
               </a>
               <a href="#" className="text-gray-400 hover:text-white">
                 <FaInstagram className="w-6 h-6" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white">
-                <FaFacebookF className="w-6 h-6" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white">
-                <FaGooglePlay className="w-6 h-6" />
               </a>
             </div>
           </div>

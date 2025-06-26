@@ -13,21 +13,21 @@ const About = () => {
         <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Left: Text Content */}
           <div>
-            <h2 className="text-lg md:text-xl text-white font-semibold mb-2 tracking-widest uppercase">Park It Up</h2>
+            <h2 className="text-lg md:text-xl text-white font-semibold mb-2 tracking-widest uppercase">PARK It Up</h2>
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">About Us</h1>
             <p className="text-lg md:text-2xl text-white/80 mb-10 max-w-2xl">
-              Park It Up is a technology company dedicated to solving urban mobility challenges through digital solutions. Park It Up aims to develop parking experience by developing innovative applications designed to provide efficient stress-free parking solutions for users.
+              PARK It Up is a technology company dedicated to solving urban mobility challenges through digital solutions. PARK It Up aims to develop parking experience by developing innovative applications designed to provide efficient stress-free parking solutions for users.
             </p>
             <div className="flex flex-wrap gap-12 mb-10">
               <div>
                 <div className="text-4xl md:text-5xl font-bold text-blue-400 mb-1">
-                  <CountUp from={0} to={10} direction='up' duration={1}/>+
+                  <CountUp from={0} to={2} direction='up' duration={1}/>+
                 </div>
                 <div className="text-white/80 text-md md:text-lg">Years of experience</div>
               </div>
               <div>
                 <div className="text-4xl md:text-5xl font-bold text-blue-400 mb-1">
-                  <CountUp from={0} to={25} direction='up' duration={1}/>k
+                  <CountUp from={0} to={100} direction='up' duration={1}/>+
                 </div>
                 <div className="text-white/80 text-md md:text-lg">Monthly active users</div>
               </div>

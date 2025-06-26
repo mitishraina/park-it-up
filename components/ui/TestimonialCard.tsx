@@ -17,7 +17,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
       <div className="bg-[#21252a] rounded-2xl p-8 min-h-[300px] flex-shrink-0 w-[400px] shadow-lg">
         <div className="">
           <div className="flex items-center mb-6">
-            <div className="w-16 h-16 rounded-2xl overflow-hidden mr-4 bg-gray-600">
+            <div className="w-16 h-16 rounded-full overflow-hidden mr-4 bg-gray-600">
               <Image
                 src={testimonial.image || "/placeholder.svg"}
                 alt={testimonial.name}
