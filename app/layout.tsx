@@ -1,7 +1,8 @@
+
 import type { Metadata } from 'next'
 import './globals.css'
-import Navbar from '@/components/ui/Navbar';
-import Footer from '@/components/ui/Footer';
+// import Navbar from '@/components/ui/Navbar';
+// import Footer from '@/components/ui/Footer';
 
 export const metadata: Metadata = {
   title: 'ParkItUp'
@@ -15,9 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar/>
+        {/* <Navbar/> */}
         {children} 
-        <Footer/>
+        {/* <Footer/> */}
       </body>
     </html>
   )
