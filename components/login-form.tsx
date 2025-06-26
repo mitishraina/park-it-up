@@ -1,19 +1,64 @@
+"use client"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from 'next/link'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { useAuthStore } from '@/lib/auth-store';
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [formData, setFormData] = useState({ phone: '', password: '' });
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const authLogin = useAuthStore((state) => state.login);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    // Phone number validation
+    const phoneDigits = formData.phone.replace(/\D/g, '');
+    if (phoneDigits.length !== 10) {
+      setError('Phone number must be exactly 10 digits');
+      return;
+    }
+    if (!formData.password) {
+      setError('Please fill all fields');
+      return;
+    }
+    try {
+      const res = await axios.post('http://localhost:8000/user/login/', {
+        phone: phoneDigits,
+        password: formData.password,
+      });
+      if (res.status === 200 && res.data.access && res.data.refresh) {
+        authLogin(res.data.access, res.data.refresh);
+        setError(null);
+        router.push('/Profile');
+      } else {
+        setError('Invalid credentials');
+      }
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Login failed');
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0 bg-[#0a121a]">
         <CardContent className="grid p-0 md:grid-cols-1">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold text-white">Welcome back</h1>
@@ -21,13 +66,22 @@ export function LoginForm({
                   Login to your <span className="text-[#3d9eee] font-semibold">Park It Up</span> account
                 </p>
               </div>
+              {error && (
+                <div className="bg-red-100 text-red-700 px-4 py-2 rounded border border-red-300 text-center">
+                  {error}
+                </div>
+              )}
               <div className="grid gap-3 text-white">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="phone">Phone</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  placeholder="Enter your 10-digit phone number"
                   required
+                  value={formData.phone}
+                  onChange={handleChange}
+                  maxLength={10}
                 />
               </div>
               <div className="grid gap-3 text-white">
@@ -40,7 +94,14 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                />
               </div>
               <Button type="submit" className="w-full bg-[#4d84a4] hover:bg-slate-700 border border-white">
                 Login

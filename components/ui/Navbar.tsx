@@ -1,19 +1,29 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import ParkitUp from '@/components/assets/Parkitup_logo.png';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
+import { useAuthStore } from '@/lib/auth-store';
 
 const Navbar = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const logout = useAuthStore((state) => state.logout);
+  const router = useRouter();
   
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
+
   const navLinks = [
     {
       name: 'How it works',
@@ -64,16 +74,27 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-3">
-            <Button className="bg-white text-[#4d84a4] rounded-full hover:bg-[#4d84a4] hover:text-white cursor-pointer">
-              <Link href="/login">
-                Sign In
-              </Link>
-            </Button>
-            <Button className="bg-[#4d84a4] rounded-full hover:bg-white cursor-pointer hover:text-[#4d84a4]" >
-              <Link href='/signup'>
-                Sign Up
-              </Link>
-            </Button>
+            {isAuthenticated ? (
+              <Button
+                className="bg-red-500 text-white rounded-full hover:bg-red-700 cursor-pointer"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            ) : (
+              <>
+                <Button className="bg-white text-[#4d84a4] rounded-full hover:bg-[#4d84a4] hover:text-white cursor-pointer">
+                  <Link href="/login">
+                    Sign In
+                  </Link>
+                </Button>
+                <Button className="bg-[#4d84a4] rounded-full hover:bg-white cursor-pointer hover:text-[#4d84a4]" >
+                  <Link href='/signup'>
+                    Sign Up
+                  </Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -111,20 +132,34 @@ const Navbar = () => {
                 );
               })}
               <div className="pt-4 border-t border-gray-800 space-y-2">
-                <Link
-                  href="/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block w-full text-center py-2 px-4 bg-white text-[#4d84a4] rounded-full hover:bg-[#4d84a4] hover:text-white transition-colors"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/signup"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block w-full text-center py-2 px-4 bg-[#4d84a4] text-white rounded-full hover:bg-white hover:text-[#4d84a4] transition-colors"
-                >
-                  Sign Up
-                </Link>
+                {isAuthenticated ? (
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="block w-full text-center py-2 px-4 bg-red-500 text-white rounded-full hover:bg-red-700 transition-colors"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block w-full text-center py-2 px-4 bg-white text-[#4d84a4] rounded-full hover:bg-[#4d84a4] hover:text-white transition-colors"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/signup"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block w-full text-center py-2 px-4 bg-[#4d84a4] text-white rounded-full hover:bg-white hover:text-[#4d84a4] transition-colors"
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
