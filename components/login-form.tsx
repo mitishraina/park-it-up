@@ -49,8 +49,9 @@ export function LoginForm({
       } else {
         setError('Invalid credentials');
       }
-    } catch (err: any) {
-      setError(err?.response?.data?.message || 'Login failed');
+    } catch (err: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setError((err as any)?.response?.data?.message || 'Login failed');
     }
   };
 

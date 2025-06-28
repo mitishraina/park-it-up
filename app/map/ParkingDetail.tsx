@@ -1,5 +1,5 @@
 import React from "react";
-import { ParkingPlace } from "./ParkingList";
+import { ParkingPlace } from "./types";
 
 interface ParkingDetailProps {
   place: ParkingPlace;
@@ -18,7 +18,7 @@ export default function ParkingDetail({ place, onClose }: ParkingDetailProps) {
       </button>
       <div className="p-8 pt-16">
         <h2 className="text-2xl font-bold text-[#e2e8f0] mb-4">{place.name}</h2>
-        {/* eslint-disable-next-line @next/next/no-img-element, @typescript-eslint/ban-ts-comment */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         {place.photoUrl && (
           <img src={place.photoUrl} alt={place.name} className="w-full h-48 object-cover rounded-xl mb-4" />
         )}

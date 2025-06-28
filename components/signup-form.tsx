@@ -106,18 +106,20 @@ export function SignupForm({
           } else {
             setError("Account created, but login failed. Please try logging in.");
           }
-        } catch (loginErr: any) {
+        } catch (loginErr: unknown) {
           setError(
-            loginErr?.response?.data?.message || "Account created, but login failed. Please try logging in."
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (loginErr as any)?.response?.data?.message || "Account created, but login failed. Please try logging in."
           );
         }
       } else {
         setError("Error creating account");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Signup error:", err);
       setError(
-        err?.response?.data?.message || "An error occurred while creating account"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (err as any)?.response?.data?.message || "An error occurred while creating account"
       );
     }
   };

@@ -1,20 +1,81 @@
 import { useState, useEffect, useCallback } from "react";
 import { Map, AdvancedMarker, useMapsLibrary } from "@vis.gl/react-google-maps";
+import { ParkingLocation } from "./types";
 
 const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID;
 
-// Define types for parking lot
-interface ParkingLot {
-  id: string;
-  displayName: string;
-  location: { lat: () => number; lng: () => number };
-  formattedAddress?: string;
+interface ParkingMarkerProps {
+  parking: ParkingLocation;
+  isSelected: boolean;
+  onClick: (parking: ParkingLocation) => void;
 }
 
-// Component for nearby search using new Place API
-function NearbySearch({ center, onParkingLotsFound }: { 
+function ParkingMarker({ parking, isSelected, onClick }: ParkingMarkerProps) {
+  const getMarkerStyle = () => {
+    const baseStyle = "rounded-xl px-3 py-2 font-bold text-sm shadow-lg border-2 cursor-pointer transition-all duration-200 min-w-[50px] text-center";
+    
+    if (isSelected) {
+      return `${baseStyle} bg-blue-600 text-white border-blue-400 scale-110 z-50`;
+    }
+    
+    switch (parking.category) {
+      case 'best-value':
+        return `${baseStyle} bg-green-600 text-white border-green-400`;
+      case 'shortest-walk':
+        return `${baseStyle} bg-orange-600 text-white border-orange-400`;
+      case 'highest-rated':
+        return `${baseStyle} bg-purple-600 text-white border-purple-400`;
+      default:
+        return `${baseStyle} bg-white text-gray-800 border-gray-300`;
+    }
+  };
+
+  const getCategoryLabel = () => {
+    switch (parking.category) {
+      case 'best-value':
+        return 'Best Value';
+      case 'shortest-walk':
+        return 'Shortest Walk';
+      case 'highest-rated':
+        return 'Highest Rated';
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <AdvancedMarker
+      position={parking.location}
+      onClick={() => onClick(parking)}
+      zIndex={isSelected ? 1000 : parking.category ? 100 : 1}
+    >
+      <div className="flex flex-col items-center">
+        {parking.category && (
+          <div className="bg-black text-white text-xs px-2 py-1 rounded mb-1 whitespace-nowrap">
+            {getCategoryLabel()}
+          </div>
+        )}
+        
+        <div className={getMarkerStyle()}>
+          ${parking.price}
+        </div>
+        
+        {parking.availableSpots <= 3 && parking.availableSpots > 0 && (
+          <div className="bg-red-500 text-white text-xs px-1 py-0.5 rounded mt-1">
+            {parking.availableSpots} left
+          </div>
+        )}
+      </div>
+    </AdvancedMarker>
+  );
+}
+
+function NearbySearch({ 
+  center, 
+  onParkingLotsFound 
+}: { 
   center: { lat: number; lng: number }; 
-  onParkingLotsFound: (lots: ParkingLot[]) => void;
+  onParkingLotsFound: (lots: ParkingLocation[]) => void;
 }) {
   const places = useMapsLibrary("places");
 
@@ -29,12 +90,66 @@ function NearbySearch({ center, onParkingLotsFound }: {
             radius: 1000
           },
           includedTypes: ['parking'],
-          fields: ['id', 'displayName', 'location', 'formattedAddress'],
+          fields: ['id', 'displayName', 'location', 'formattedAddress', 'rating', 'priceLevel', 'photos'],
           maxResultCount: 20
         });
 
-        if (nearbyPlaces) {
-          onParkingLotsFound(nearbyPlaces as ParkingLot[]);
+        if (nearbyPlaces && nearbyPlaces.length > 0) {
+          const mappedParkingLots = await Promise.all(
+            nearbyPlaces.map(async (place, index: number) => {
+              // Type guard for location
+              if (!place.location || typeof place.location !== 'object') return null;
+              const getLat = (loc: { lat: number | (() => number) }) => typeof loc.lat === 'function' ? loc.lat() : loc.lat;
+              const getLng = (loc: { lng: number | (() => number) }) => typeof loc.lng === 'function' ? loc.lng() : loc.lng;
+              const lat = getLat(place.location as { lat: number | (() => number) });
+              const lng = getLng(place.location as { lng: number | (() => number) });
+              
+              let photoUrl = undefined;
+              if (place.photos && place.photos.length > 0) {
+                try {
+                  photoUrl = place.photos[0].getURI({ maxWidth: 400, maxHeight: 400 });
+                } catch {
+                  // Only use .name if it exists
+                  const photoAny = place.photos[0] as { name?: string };
+                  if (photoAny.name) {
+                    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+                    photoUrl = `https://places.googleapis.com/v1/${photoAny.name}/media?maxHeightPx=400&maxWidthPx=400&key=${apiKey}`;
+                  }
+                }
+              }
+
+              const basePrice = 15 + Math.floor(Math.random() * 50);
+              const rating = Number((3.5 + Math.random() * 1.5).toFixed(1));
+              const reviewCount = 50 + Math.floor(Math.random() * 300);
+              const walkingTime = 2 + Math.floor(Math.random() * 15);
+              const availableSpots = Math.floor(Math.random() * 20);
+              const totalSpots = availableSpots + Math.floor(Math.random() * 30);
+
+              let category: ParkingLocation['category'] = undefined;
+              if (index === 0) category = 'best-value';
+              else if (index === 1) category = 'shortest-walk';
+              else if (index === 2) category = 'highest-rated';
+
+              return {
+                id: place.id,
+                name: place.displayName || 'Parking Lot',
+                address: place.formattedAddress || 'Address not available',
+                price: basePrice,
+                rating,
+                reviewCount,
+                walkingTime,
+                walkingDistance: `${(walkingTime * 0.05).toFixed(1)}mi`,
+                availableSpots,
+                totalSpots,
+                location: { lat, lng },
+                ...(photoUrl ? { photoUrl } : {}),
+                category,
+                features: [],
+              } as ParkingLocation;
+            })
+          );
+
+          onParkingLotsFound(mappedParkingLots.filter((lot): lot is ParkingLocation => lot !== null));
         } else {
           onParkingLotsFound([]);
         }
@@ -50,25 +165,24 @@ function NearbySearch({ center, onParkingLotsFound }: {
   return null;
 }
 
-// Main content component
-function MapContent({ center, onPlaceSelect }: { 
-  center: { lat: number; lng: number }, 
-  onPlaceSelect: (place: { location: { lat: () => number; lng: () => number } }) => void 
+export default function MapContainer({ 
+  center, 
+  parkingLocations, 
+  selectedParking, 
+  onParkingSelect 
+}: { 
+  center: { lat: number; lng: number };
+  parkingLocations: ParkingLocation[];
+  selectedParking: ParkingLocation | null;
+  onParkingSelect: (parking: ParkingLocation) => void;
 }) {
-  const [parkingLots, setParkingLots] = useState<ParkingLot[]>([]);
   const [mapCenter, setMapCenter] = useState(center);
+  const [nearbyParkingLots, setNearbyParkingLots] = useState<ParkingLocation[]>([]);
 
-  // Memoize onPlaceSelect to ensure stability
-  const stableOnPlaceSelect = useCallback((place: { location: { lat: () => number; lng: () => number } }) => {
-    onPlaceSelect(place);
-  }, [onPlaceSelect]);
-
-  // Update map center only when center prop changes (from autocomplete)
   useEffect(() => {
     setMapCenter(center);
   }, [center]);
 
-  // Handle map camera changes to allow free movement
   const handleCameraChange = (event: { detail?: { center?: { lat: number; lng: number } } }) => {
     if (event.detail && event.detail.center) {
       setMapCenter({
@@ -78,54 +192,48 @@ function MapContent({ center, onPlaceSelect }: {
     }
   };
 
-  // Handle marker clicks to use onPlaceSelect
-  const handleMarkerClick = useCallback((lot: ParkingLot) => {
-    if (lot.location) {
-      stableOnPlaceSelect({
-        location: lot.location
-      });
-    }
-  }, [stableOnPlaceSelect]);
+  const handleParkingClick = useCallback((parking: ParkingLocation) => {
+    onParkingSelect(parking);
+  }, [onParkingSelect]);
+
+  const handleNearbyParkingFound = useCallback((lots: ParkingLocation[]) => {
+    setNearbyParkingLots(lots);
+  }, []);
+
+  const allParkingLocations = [
+    ...parkingLocations,
+    ...nearbyParkingLots.filter(nearby => 
+      !parkingLocations.some(existing => existing.id === nearby.id)
+    )
+  ];
 
   return (
-    <div className="relative w-screen h-screen">
+    <div className="relative w-full h-full">
       <Map
         center={mapCenter}
         defaultZoom={14}
         gestureHandling="greedy"
         disableDefaultUI={false}
         mapTypeControl={false}
-        colorScheme="DARK"
-        style={{ width: "100vw", height: "100vh" }}
+        colorScheme="LIGHT"
+        style={{ width: "100%", height: "100%" }}
         mapId={mapId}
         onCameraChanged={handleCameraChange}
       >
         <NearbySearch 
           center={mapCenter} 
-          onParkingLotsFound={setParkingLots} 
+          onParkingLotsFound={handleNearbyParkingFound} 
         />
-        {parkingLots.map((lot) =>
-          lot.location ? (
-            <AdvancedMarker
-              key={lot.id}
-              position={{ 
-                lat: lot.location.lat(), 
-                lng: lot.location.lng() 
-              }}
-              title={lot.displayName}
-              onClick={() => handleMarkerClick(lot)}
-            />
-          ) : null
-        )}
+        
+        {allParkingLocations.map((parking) => (
+          <ParkingMarker
+            key={parking.id}
+            parking={parking}
+            isSelected={selectedParking?.id === parking.id}
+            onClick={handleParkingClick}
+          />
+        ))}
       </Map>
     </div>
   );
-}
-
-// Main export - REMOVED nested APIProvider
-export default function MapContainer({ center, onPlaceSelect }: { 
-  center: { lat: number; lng: number }, 
-  onPlaceSelect: (place: { location: { lat: () => number; lng: () => number } }) => void 
-}) {
-  return <MapContent center={center} onPlaceSelect={onPlaceSelect} />;
 }

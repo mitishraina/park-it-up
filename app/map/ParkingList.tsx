@@ -1,14 +1,6 @@
 import React from "react";
+import { ParkingPlace } from "./types";
 
-export interface ParkingPlace {
-  id: string;
-  name: string;
-  address?: string;
-  rating?: number;
-  priceLevel?: number;
-  location: { lat: number; lng: number };
-  photoUrl?: string;
-}
 
 interface ParkingListProps {
   places: ParkingPlace[];
