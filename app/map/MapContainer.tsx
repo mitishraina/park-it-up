@@ -1,8 +1,28 @@
 import { useState, useEffect, useCallback } from "react";
 import { Map, AdvancedMarker, useMapsLibrary } from "@vis.gl/react-google-maps";
-import { ParkingLocation } from "./types";
+import { ParkingLocation, PlaceSelect } from "./types";
 
 const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID;
+
+// --- Type Definitions for Google API responses to avoid 'any' ---
+interface GooglePlacePhoto {
+  name: string;
+  getURI: (options: { maxWidth: number; maxHeight: number }) => string;
+}
+
+interface GooglePlaceSearchResult {
+  id: string;
+  displayName?: string;
+  formattedAddress?: string;
+  location: {
+    lat: number | (() => number);
+    lng: number | (() => number);
+  };
+  rating?: number;
+  priceLevel?: number;
+  photos?: GooglePlacePhoto[];
+}
+// ---
 
 interface ParkingMarkerProps {
   parking: ParkingLocation;
@@ -11,8 +31,13 @@ interface ParkingMarkerProps {
 }
 
 function ParkingMarker({ parking, isSelected, onClick }: ParkingMarkerProps) {
+  // Responsive: smaller marker for mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+
   const getMarkerStyle = () => {
-    const baseStyle = "rounded-xl px-3 py-2 font-bold text-sm shadow-lg border-2 cursor-pointer transition-all duration-200 min-w-[50px] text-center";
+    const baseStyle = isMobile
+      ? "rounded px-1.5 py-0.5 text-xs shadow border min-w-[24px] text-center"
+      : "rounded-xl px-3 py-2 font-bold text-sm shadow-lg border-2 cursor-pointer transition-all duration-200 min-w-[50px] text-center";
     
     if (isSelected) {
       return `${baseStyle} bg-blue-600 text-white border-blue-400 scale-110 z-50`;
@@ -96,24 +121,19 @@ function NearbySearch({
 
         if (nearbyPlaces && nearbyPlaces.length > 0) {
           const mappedParkingLots = await Promise.all(
-            nearbyPlaces.map(async (place, index: number) => {
-              // Type guard for location
-              if (!place.location || typeof place.location !== 'object') return null;
-              const getLat = (loc: { lat: number | (() => number) }) => typeof loc.lat === 'function' ? loc.lat() : loc.lat;
-              const getLng = (loc: { lng: number | (() => number) }) => typeof loc.lng === 'function' ? loc.lng() : loc.lng;
-              const lat = getLat(place.location as { lat: number | (() => number) });
-              const lng = getLng(place.location as { lng: number | (() => number) });
+            // FIXED: Replaced 'any' with the specific 'GooglePlaceSearchResult' type
+            (nearbyPlaces as GooglePlaceSearchResult[]).map(async (place, index: number) => {
+              const lat = typeof place.location.lat === 'function' ? place.location.lat() : place.location.lat;
+              const lng = typeof place.location.lng === 'function' ? place.location.lng() : place.location.lng;
               
-              let photoUrl = undefined;
+              let photoUrl: string | undefined = undefined;
               if (place.photos && place.photos.length > 0) {
                 try {
                   photoUrl = place.photos[0].getURI({ maxWidth: 400, maxHeight: 400 });
                 } catch {
-                  // Only use .name if it exists
-                  const photoAny = place.photos[0] as { name?: string };
-                  if (photoAny.name) {
+                  if (place.photos[0].name) {
                     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-                    photoUrl = `https://places.googleapis.com/v1/${photoAny.name}/media?maxHeightPx=400&maxWidthPx=400&key=${apiKey}`;
+                    photoUrl = `https://places.googleapis.com/v1/${place.photos[0].name}/media?maxHeightPx=400&maxWidthPx=400&key=${apiKey}`;
                   }
                 }
               }
@@ -142,14 +162,14 @@ function NearbySearch({
                 availableSpots,
                 totalSpots,
                 location: { lat, lng },
-                ...(photoUrl ? { photoUrl } : {}),
+                photoUrl,
                 category,
-                features: [],
-              } as ParkingLocation;
+                features: ['Security Camera', 'Covered', 'EV Charging'].slice(0, Math.floor(Math.random() * 3))
+              };
             })
           );
 
-          onParkingLotsFound(mappedParkingLots.filter((lot): lot is ParkingLocation => lot !== null));
+          onParkingLotsFound(mappedParkingLots);
         } else {
           onParkingLotsFound([]);
         }
@@ -167,11 +187,13 @@ function NearbySearch({
 
 export default function MapContainer({ 
   center, 
+  // onPlaceSelect,
   parkingLocations, 
   selectedParking, 
   onParkingSelect 
 }: { 
   center: { lat: number; lng: number };
+  onPlaceSelect: (place: PlaceSelect) => void;
   parkingLocations: ParkingLocation[];
   selectedParking: ParkingLocation | null;
   onParkingSelect: (parking: ParkingLocation) => void;
@@ -211,7 +233,7 @@ export default function MapContainer({
     <div className="relative w-full h-full">
       <Map
         center={mapCenter}
-        defaultZoom={14}
+        defaultZoom={16} // Increased from 14 to 16 for a closer initial view
         gestureHandling="greedy"
         disableDefaultUI={false}
         mapTypeControl={false}

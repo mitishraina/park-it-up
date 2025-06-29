@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import SideBar from "./SideBar";
 import MapContainer from "./MapContainer";
@@ -14,6 +14,7 @@ export default function MapPage() {
     lat: 28.7041,
     lng: 77.1025,
   });
+  
   const [activeTab, setActiveTab] = useState<"map" | "list">("list");
   const [isMobile, setIsMobile] = useState(false);
   const [selectedParking, setSelectedParking] = useState<ParkingLocation | null>(null);
@@ -45,12 +46,13 @@ export default function MapPage() {
 
   const stableParkingLocations = useMemo(() => parkingLocations, [parkingLocations]);
 
-  const handlePlaceSelect = (place: PlaceSelect) => {
+  // Memoized handlePlaceSelect to prevent infinite re-render loop in SideBar
+  const handlePlaceSelect = useCallback((place: PlaceSelect) => {
     if (!place.location) return;
     const lat = typeof place.location.lat === 'function' ? place.location.lat() : place.location.lat;
     const lng = typeof place.location.lng === 'function' ? place.location.lng() : place.location.lng;
     setCenter({ lat, lng });
-  };
+  }, []);
 
   // FIXED: This function just sets selected parking - for sidebar detail view
   const handleParkingSelect = (parking: ParkingLocation) => {
@@ -82,6 +84,11 @@ export default function MapPage() {
     setSelectedParking(null);
   };
 
+  // Handler for closing the carousel (deselects parking)
+  const handleCloseCarousel = () => {
+    setSelectedParking(null);
+  };
+
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!} libraries={["places", "marker"]}>
       <div className="fixed inset-0 w-screen h-screen z-0 bg-[linear-gradient(145deg,_#1a1d29_0%,_#1e293b_100%)]">
@@ -94,6 +101,7 @@ export default function MapPage() {
               <div className="absolute top-0 left-0 z-20 w-full h-full">
                 <SideBar 
                   onPlaceSelect={handlePlaceSelect} 
+                  // setShowSidebar={setShowSidebar}
                   activeTab={activeTab}
                   setActiveTab={setActiveTab}
                   partialMode={false}
@@ -110,6 +118,7 @@ export default function MapPage() {
                 <div className="flex-none z-30 bg-[#151823] border-b border-[#23263a] shadow-lg">
                   <SideBar 
                     onPlaceSelect={handlePlaceSelect} 
+                    // setShowSidebar={setShowSidebar}
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}
                     partialMode={true}
@@ -122,6 +131,7 @@ export default function MapPage() {
                 <div className="flex-1 relative">
                   <MapContainer 
                     center={center} 
+                    onPlaceSelect={handlePlaceSelect} 
                     parkingLocations={stableParkingLocations}
                     selectedParking={selectedParking}
                     onParkingSelect={handleParkingCardTap}  // FIXED - Opens modal
@@ -134,6 +144,7 @@ export default function MapPage() {
                       selectedParking={selectedParking}
                       onParkingSelect={setSelectedParking}
                       onCardTap={handleParkingCardTap}
+                      onClose={handleCloseCarousel}
                     />
                   )}
                 </div>
@@ -156,6 +167,7 @@ export default function MapPage() {
               ) : (
                 <SideBar 
                   onPlaceSelect={handlePlaceSelect} 
+                  // setShowSidebar={setShowSidebar}
                   activeTab={activeTab}
                   setActiveTab={setActiveTab}
                   partialMode={false}
@@ -169,10 +181,12 @@ export default function MapPage() {
             </div>
             <MapContainer 
               center={center} 
+              onPlaceSelect={handlePlaceSelect} 
               parkingLocations={stableParkingLocations}
               selectedParking={selectedParking}
               onParkingSelect={handleParkingSelect}
             />
+            
             {/* Swipeable Card Carousel for Desktop */}
             {stableParkingLocations.length > 0 && (
               <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30">
@@ -181,6 +195,7 @@ export default function MapPage() {
                   selectedParking={selectedParking}
                   onParkingSelect={setSelectedParking}
                   onCardTap={handleParkingCardTap}
+                  onClose={handleCloseCarousel}
                 />
               </div>
             )}

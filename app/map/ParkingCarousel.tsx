@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { FaStar, FaWalking } from 'react-icons/fa';
+import Image from "next/image";
+import { FaStar, FaWalking} from 'react-icons/fa';
 import { ParkingLocation } from './types';
 
 interface ParkingCarouselProps {
@@ -7,6 +8,7 @@ interface ParkingCarouselProps {
   selectedParking: ParkingLocation | null;
   onParkingSelect: (parking: ParkingLocation) => void;
   onCardTap: (parking: ParkingLocation) => void;
+  onClose: () => void;
 }
 
 function ParkingCard({ 
@@ -65,15 +67,13 @@ function ParkingCard({
 
       {/* Parking Image */}
       <div className="mb-2">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={parking.photoUrl || fallbackImg}
           alt={parking.name}
+          width={192}
+          height={80}
           className="w-full h-20 object-cover rounded-lg"
-          onError={(e) => {
-            const target = e.currentTarget;
-            if (target.src !== fallbackImg) target.src = fallbackImg;
-          }}
+          unoptimized
         />
       </div>
 
@@ -125,7 +125,8 @@ export default function ParkingCarousel({
   parkingLocations,
   selectedParking,
   onParkingSelect,
-  onCardTap
+  onCardTap,
+  // onClose
 }: ParkingCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);

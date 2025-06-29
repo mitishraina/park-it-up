@@ -107,20 +107,24 @@ export function SignupForm({
             setError("Account created, but login failed. Please try logging in.");
           }
         } catch (loginErr: unknown) {
-          setError(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (loginErr as any)?.response?.data?.message || "Account created, but login failed. Please try logging in."
-          );
+          if (loginErr && typeof loginErr === 'object' && 'response' in loginErr) {
+            // @ts-expect-error: loginErr.response may not be typed
+            setError(loginErr.response?.data?.message || "Account created, but login failed. Please try logging in.");
+          } else {
+            setError("Account created, but login failed. Please try logging in.");
+          }
         }
       } else {
         setError("Error creating account");
       }
     } catch (err: unknown) {
       console.error("Signup error:", err);
-      setError(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (err as any)?.response?.data?.message || "An error occurred while creating account"
-      );
+      if (err && typeof err === 'object' && 'response' in err) {
+        // @ts-expect-error: err.response may not be typed
+        setError(err.response?.data?.message || "An error occurred while creating account");
+      } else {
+        setError("An error occurred while creating account");
+      }
     }
   };
 

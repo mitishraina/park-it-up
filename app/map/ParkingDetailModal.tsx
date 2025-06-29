@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FaStar, FaWalking, FaParking, FaTimes, FaArrowLeft, FaArrowRight, FaShieldAlt, FaApple, FaGooglePay, FaCcVisa, FaCcMastercard, FaCcAmex, FaCcDiscover } from 'react-icons/fa';
 import { SiPaypal } from 'react-icons/si';
 import { ParkingLocation } from './types';
+import Image from "next/image";
 
 interface ParkingDetailModalProps {
   parking: ParkingLocation;
@@ -11,8 +12,7 @@ interface ParkingDetailModalProps {
 
 export default function ParkingDetailModal({ parking, onClose, isModal = true }: ParkingDetailModalProps) {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedDuration, setSelectedDuration] = useState('11 hours, 30 minutes');
+ 
 
   // Mock photos for carousel
   const photos = [
@@ -65,12 +65,14 @@ export default function ParkingDetailModal({ parking, onClose, isModal = true }:
 
         {/* Photo Carousel */}
         <div className="relative px-4 pt-2">
-          <div className="w-full h-48 rounded-xl overflow-hidden bg-[#23263a] flex items-center justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <div className="w-full h-48 rounded-xl overflow-hidden bg-[#2a3441] border border-[#374151] mb-6">
+            <Image
               src={photos[currentPhotoIndex]}
               alt={parking.name}
-              className="object-cover w-full h-full"
+              width={400}
+              height={192}
+              className="object-cover w-full h-full opacity-60"
+              unoptimized
             />
             {photos.length > 1 && (
               <>

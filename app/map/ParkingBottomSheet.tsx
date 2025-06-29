@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaStar, FaWalking, FaTimes, FaMapMarkerAlt } from 'react-icons/fa';
+import Image from "next/image";
 import { ParkingLocation } from './types';
 
 interface ParkingBottomSheetProps {
@@ -67,16 +68,14 @@ export default function ParkingBottomSheet({ parking, onClose }: ParkingBottomSh
           </div>
 
           {/* Parking Image */}
-          <div className="mb-4">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <div className="mb-2">
+            <Image
               src={parking.photoUrl || fallbackImg}
               alt={parking.name}
-              className="w-full h-48 object-cover rounded-lg"
-              onError={(e) => {
-                const target = e.currentTarget;
-                if (target.src !== fallbackImg) target.src = fallbackImg;
-              }}
+              width={192}
+              height={80}
+              className="w-full h-20 object-cover rounded-lg"
+              unoptimized
             />
           </div>
 
