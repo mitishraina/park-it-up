@@ -76,7 +76,7 @@ const Features = () => {
     };
 
     return (
-        <section className="py-20 bg-[#0a121a]">
+        <section className="py-20 bg-[#0a121a]" id='features'>
             <div className="container mx-auto px-4 max-w-7xl">
                 <div className="flex flex-col lg:grid lg:grid-cols-2 gap-16 items-center">
                     {/* Left side - Phone with rotating animation */}
