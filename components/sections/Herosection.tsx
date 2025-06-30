@@ -26,25 +26,36 @@ const Herosection = () => {
                     />
                 </div>
 
-                {/* Modified Vignette Overlay - Lighter on Right Side */}
+                {/* Modified Vignette Overlay - Slightly Harsher on Mobile */}
                 <div className="absolute inset-0 w-full h-full pointer-events-none">
-                    {/* Asymmetric radial vignette - stronger on left, lighter on right */}
+                    {/* Mobile: slightly harsher vignette and left darkening */}
                     <div 
-                        className="absolute inset-0 w-full h-full"
+                        className="absolute inset-0 w-full h-full md:hidden"
+                        style={{
+                            background: `radial-gradient(ellipse 100% 80% at 25% center, transparent 10%, rgba(10, 18, 26, 0.5) 50%, rgba(10, 18, 26, 0.85) 100%)`
+                        }}
+                    />
+                    <div 
+                        className="absolute inset-0 w-full h-full md:hidden"
+                        style={{
+                            background: `linear-gradient(to right, rgba(10, 18, 26, 0.85) 0%, rgba(10, 18, 26, 0.6) 40%, rgba(10, 18, 26, 0.15) 70%, transparent 90%)`
+                        }}
+                    />
+                    {/* Desktop: original vignette and overlays */}
+                    <div 
+                        className="absolute inset-0 w-full h-full hidden md:block"
                         style={{
                             background: `radial-gradient(ellipse 120% 100% at 30% center, transparent 20%, rgba(10, 18, 26, 0.4) 60%, rgba(10, 18, 26, 0.8) 100%)`
                         }}
                     />
-                    {/* Left side extra darkening - much stronger */}
                     <div 
-                        className="absolute inset-0 w-full h-full"
+                        className="absolute inset-0 w-full h-full hidden md:block"
                         style={{
                             background: `linear-gradient(to right, rgba(10, 18, 26, 0.9) 0%, rgba(10, 18, 26, 0.7) 35%, rgba(10, 18, 26, 0.2) 60%, transparent 75%)`
                         }}
                     />
-                    {/* Top and bottom edge darkening - reduced on right side */}
                     <div 
-                        className="absolute inset-0 w-full h-full"
+                        className="absolute inset-0 w-full h-full hidden md:block"
                         style={{
                             background: `
                                 linear-gradient(to bottom, 
