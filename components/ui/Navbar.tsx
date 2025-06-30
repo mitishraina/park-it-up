@@ -14,7 +14,7 @@ const Navbar = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
   const router = useRouter();
-  
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -58,7 +58,8 @@ const Navbar = () => {
                 className='h-18 w-auto' />
               <span className='hidden md:block text-white font-bold'>PARK It Up</span>
             </div>
-          </Link>          <div className="hidden md:flex items-center space-x-8">
+          </Link>
+          <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => {
               const isActive = (pathname ?? '') === link.href || ((pathname ?? '').startsWith(link.href) && link.href !== '/');
               return (
@@ -83,16 +84,16 @@ const Navbar = () => {
               </Button>
             ) : (
               <>
-                <Button className="bg-white text-[#4d84a4] rounded-full hover:bg-[#4d84a4] hover:text-white cursor-pointer">
-                  <Link href="/login">
+                <Link href="/login">
+                  <Button className="bg-white text-[#4d84a4] rounded-full hover:bg-[#4d84a4] hover:text-white cursor-pointer">
                     Sign In
-                  </Link>
-                </Button>
-                <Button className="bg-[#4d84a4] rounded-full hover:bg-white cursor-pointer hover:text-[#4d84a4]" >
-                  <Link href='/signup'>
+                  </Button>
+                </Link>
+                <Link href='/signup'>
+                  <Button className="bg-[#4d84a4] rounded-full hover:bg-white cursor-pointer hover:text-[#4d84a4]" >
                     Sign Up
-                  </Link>
-                </Button>
+                  </Button>
+                </Link>
               </>
             )}
           </div>
@@ -121,11 +122,10 @@ const Navbar = () => {
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`block py-2 px-3 rounded-md text-base font-medium ${
-                      isActive 
-                        ? "text-[#4d84a4] bg-gray-800" 
-                        : "text-gray-100 hover:text-[#4d84a4] hover:bg-gray-800"
-                    } transition-colors`}
+                    className={`block py-2 px-3 rounded-md text-base font-medium ${isActive
+                      ? "text-[#4d84a4] bg-gray-800"
+                      : "text-gray-100 hover:text-[#4d84a4] hover:bg-gray-800"
+                      } transition-colors`}
                   >
                     {link.name}
                   </Link>
