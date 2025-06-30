@@ -1,6 +1,6 @@
 import React from 'react'
-// import Navbar from '@/components/ui/Navbar';
-// import Footer from '@/components/ui/Footer';
+import Navbar from "@/components/ui/Navbar";
+import Footer from "@/components/ui/Footer";
 import '../globals.css';
 import Aboutus from '@/components/assets/aboutus.png'
 import Image from 'next/image';
@@ -8,7 +8,9 @@ import CountUp from '@/components/ui/count-up';
 
 const About = () => {
   return (
-    <div>
+    <>
+      <Navbar />
+      <div>
         <section className="relative bg-[#0a121a] flex min-h-screen items-center justify-center py-16 px-6 sm:px-8 lg:px-16">
         <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Left: Text Content */}
@@ -65,6 +67,8 @@ const About = () => {
       </section>
     
     </div>
+      <Footer />
+    </>
   )
 }
 

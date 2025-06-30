@@ -3,33 +3,85 @@
 import React from 'react'
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { CircleCheckBig } from "lucide-react"
-// import { Button } from "../ui/button"
 import { Badge } from "../ui/badge"
 import LocationAutocomplete from "../ui/LocationAutocomplete"
 
 const Herosection = () => {
     return (
         <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!} libraries={["places", "marker"]}>
-            <section className="w-full pt-8 pb-12 bg-[#0f191d] overflow-x-hidden relative min-h-[600px] flex items-center justify-center">
-                <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-2 items-center gap-12 px-6 lg:px-16 py-10">
-                    {/* Left: Hero text and search */}
-                    <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-                        <Badge className="mb-6 bg-[#262a34] text-sm rounded-full font-semibold flex items-center justify-center">
+            <section className="relative w-full min-h-[80vh] flex items-center justify-center bg-[#0a121a] text-white overflow-hidden">
+                {/* Background Video - Full Section Coverage */}
+                <div className="absolute inset-0 w-full h-full overflow-hidden">
+                    <video
+                        className="absolute top-0 left-0 w-full h-full object-cover"
+                        style={{
+                            objectPosition: '80% center', // Move video further right
+                            transform: 'translateX(15%)' // Increase rightward shift
+                        }}
+                        src="/Comp_2.mp4"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                    />
+                </div>
+
+                {/* Modified Vignette Overlay - Lighter on Right Side */}
+                <div className="absolute inset-0 w-full h-full pointer-events-none">
+                    {/* Asymmetric radial vignette - stronger on left, lighter on right */}
+                    <div 
+                        className="absolute inset-0 w-full h-full"
+                        style={{
+                            background: `radial-gradient(ellipse 120% 100% at 30% center, transparent 20%, rgba(10, 18, 26, 0.4) 60%, rgba(10, 18, 26, 0.8) 100%)`
+                        }}
+                    />
+                    {/* Left side extra darkening - much stronger */}
+                    <div 
+                        className="absolute inset-0 w-full h-full"
+                        style={{
+                            background: `linear-gradient(to right, rgba(10, 18, 26, 0.9) 0%, rgba(10, 18, 26, 0.7) 35%, rgba(10, 18, 26, 0.2) 60%, transparent 75%)`
+                        }}
+                    />
+                    {/* Top and bottom edge darkening - reduced on right side */}
+                    <div 
+                        className="absolute inset-0 w-full h-full"
+                        style={{
+                            background: `
+                                linear-gradient(to bottom, 
+                                    rgba(10, 18, 26, 0.8) 0%, 
+                                    transparent 25%, 
+                                    transparent 75%, 
+                                    rgba(10, 18, 26, 0.8) 100%
+                                ),
+                                linear-gradient(to right, 
+                                    rgba(10, 18, 26, 0.3) 0%, 
+                                    rgba(10, 18, 26, 0.1) 50%, 
+                                    transparent 70%
+                                )`
+                        }}
+                    />
+                </div>
+
+                {/* Content Layer */}
+                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-full max-w-7xl mx-auto px-6 py-16 gap-10">
+                    {/* Left: Text Content */}
+                    <div className="flex-1 flex flex-col items-start gap-6">
+                        <Badge className="mb-6 bg-[#262a34]/80 backdrop-blur-sm text-sm rounded-full font-semibold flex items-center justify-center border border-[#4d84a4]/30">
                             #Now in Delhi 🏙️
                         </Badge>
-                        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gradient mb-6 leading-tight wipe-up">
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
                             In a Hurry? <br />
                             PARK It Up!
                         </h1>
-                        <p className="text-md text-gradient2 mb-8 leading-tight max-w-2xl">
-                            PARK It Up is integrated with GPS, helping you instantly find the nearest available parking spots with real-time availability and a range of price options to suit your budget.
+                        <p className="text-lg sm:text-xl text-gray-200 max-w-lg">
+                            PARK It Up helps you discover, compare, and book parking spots in seconds. Save time, avoid hassle, and park smarter—anywhere, anytime.
                         </p>
                         <div className="flex items-center gap-2 mb-8 w-full max-w-lg">
                             <div className="relative flex-1">
                                 <LocationAutocomplete placeholder="Search for parking..." />
                             </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-8 space-y-4 sm:space-y-0 text-sm text-gray-500 justify-center lg:justify-start">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-8 space-y-4 sm:space-y-0 text-sm text-gray-300 justify-center lg:justify-start">
                             <div className="flex items-center space-x-2">
                                 <CircleCheckBig className="w-4 h-4 text-[#4d84a4]" />
                                 <span>No spam email</span>
@@ -44,17 +96,10 @@ const Herosection = () => {
                             </div>
                         </div>
                     </div>
-                    {/* Right: Comp_1 video, seamless and responsive */}
-                    <div className="hidden lg:flex justify-center items-center h-full">
-                        <video
-                            src="/Comp_1.mp4"
-                            className="rounded-3xl shadow-2xl w-full max-w-[600px] min-w-[400px] min-h-[400px] max-h-[520px] object-cover object-center"
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            preload="auto"
-                        />
+
+                    {/* Right: Let the video show through naturally */}
+                    <div className="hidden md:flex flex-1 items-center justify-center relative min-h-[400px]">
+                        {/* Empty space to let video content show through */}
                     </div>
                 </div>
             </section>
