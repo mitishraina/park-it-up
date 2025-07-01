@@ -4,8 +4,41 @@ import { IoCall, IoLocation } from "react-icons/io5";
 import { MdOutlineEmail } from "react-icons/md";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
+import { Resend } from "resend"
 
 export default function ContactPage() {
+
+  async function send(formData: FormData) {
+    "use server";
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    const dataObj = Object.fromEntries(formData.entries());
+    const { name, email, subject, message } = dataObj as {
+      name: string;
+      email: string;
+      subject: string;
+      message: string;
+    };
+
+    try {
+      await resend.emails.send({
+        from: `${name} <onboarding@resend.dev>`,
+        to: "officialparkitup@gmail.com",
+        subject: "PARK It Up - Contact Form Submission",
+        html: `
+      <h1>Contact Form Submission</h1>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Subject:</strong> ${subject}</p>
+      <p><strong>Message:</strong><br/>${(message ?? "").toString().replace(/\n/g, "<br/>")}</p>
+      `,
+      });
+      console.log("Email sent successfully");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <>
       <Navbar />
@@ -19,12 +52,13 @@ export default function ContactPage() {
             form below.
           </h3>
         </div>
-        <form>
-          <div className="pt-6 sm:pt-10 flex flex-col lg:flex-row gap-6 lg:gap-10 max-w-6xl mx-auto">
-            {/* Left: Form */}
-            <div className="flex flex-col gap-4 w-full lg:w-1/2">
+        <div className="flex mt-20 flex-col sm:flex-row w-full gap-10 justify-center">
+          {/* Left: Form */}
+          <form className="flex w-full justify-center lg:w-2/5" action={send}>
+            <div className="flex flex-col gap-4 w-full">
               <Input
                 id="name"
+                name="name"
                 type="text"
                 placeholder="Name"
                 required
@@ -32,6 +66,7 @@ export default function ContactPage() {
               />
               <Input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="Email"
                 required
@@ -39,6 +74,7 @@ export default function ContactPage() {
               />
               <Input
                 id="subject"
+                name="subject"
                 type="text"
                 placeholder="Subject"
                 required
@@ -46,6 +82,7 @@ export default function ContactPage() {
               />
               <textarea
                 id="message"
+                name="message"
                 placeholder="Message"
                 required
                 rows={4}
@@ -58,41 +95,42 @@ export default function ContactPage() {
                 Send Message
               </Button>
             </div>
-            {/* Right: Contact Info */}
-            <div className="flex flex-col gap-8 text-white w-full lg:w-3/5">
-              <div className="flex items-start gap-4">
-                <IoCall className="text-[32px] sm:text-[36px] flex-shrink-0" />
-                <div>
-                  <h3 className="text-2xl sm:text-3xl font-semibold">Call us</h3>
-                  <p className="text-gray-300 cursor-pointer text-lg sm:text-xl">
-                    +91 9560967377
-                  </p>
-                </div>
-              </div>
+          </form>
 
-              <div className="flex items-start gap-4">
-                <MdOutlineEmail className="text-[32px] sm:text-[36px] flex-shrink-0" />
-                <div>
-                  <h3 className="text-2xl sm:text-3xl font-semibold">Email us</h3>
-                  <p className="text-gray-300 cursor-pointer text-lg sm:text-xl">
-                    officialparkitup@gmail.com
-                  </p>
-                </div>
+          {/* Right: Contact Info */}
+          <div className="flex flex-col gap-8 text-white w-full lg:w-2/5">
+            <div className="flex gap-4">
+              <IoCall className="text-[32px] sm:text-[36px] flex-shrink-0" />
+              <div>
+                <h3 className="text-2xl sm:text-3xl font-semibold">Call us</h3>
+                <p className="text-gray-300 cursor-pointer text-lg sm:text-xl">
+                  +91 9560967377
+                </p>
               </div>
+            </div>
 
-              <div className="flex items-start gap-4">
-                <IoLocation className="text-[32px] sm:text-[36px] flex-shrink-0" />
-                <div>
-                  <h3 className="text-2xl sm:text-3xl font-semibold">Visit us</h3>
-                  <p className="text-gray-300 cursor-pointer text-lg sm:text-xl">
-                    811C, AB4, <br /> Delhi Technological University,
-                    <br /> Rohini, Delhi, India
-                  </p>
-                </div>
+            <div className="flex gap-4">
+              <MdOutlineEmail className="text-[32px] sm:text-[36px] flex-shrink-0" />
+              <div>
+                <h3 className="text-2xl sm:text-3xl font-semibold">Email us</h3>
+                <p className="text-gray-300 cursor-pointer text-lg sm:text-xl">
+                  officialparkitup@gmail.com
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <IoLocation className="text-[32px] sm:text-[36px] flex-shrink-0" />
+              <div>
+                <h3 className="text-2xl sm:text-3xl font-semibold">Visit us</h3>
+                <p className="text-gray-300 cursor-pointer text-lg sm:text-xl">
+                  811C, AB4, <br /> Delhi Technological University,
+                  <br /> Rohini, Delhi, India
+                </p>
               </div>
             </div>
           </div>
-        </form>
+        </div>
       </div>
       <Footer />
     </>
